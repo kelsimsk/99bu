@@ -67,7 +67,25 @@ const NO_DATA = 'no data';
 
 var initYSDK  = true;
 var initGame  = false;
-var ysdk      = null;
+var ysdk = {
+    environment: { i18n: { lang: 'en', tld: 'com' }, app: { id: '0' }, browser: { lang: 'en' }, payload: '' },
+    deviceInfo:  { type: 'desktop', isMobile: ()=>false, isDesktop: ()=>true, isTablet: ()=>false, isTV: ()=>false },
+    screen:      { fullscreen: { status: 'off', request: ()=>{}, exit: ()=>{} } },
+    adv:         { showFullscreenAdv: ()=>{}, showRewardedVideo: ()=>{}, showBannerAdv: ()=>Promise.resolve({stickyAdvIsShowing:false}), hideBannerAdv: ()=>Promise.resolve(), getBannerAdvStatus: ()=>Promise.resolve({stickyAdvIsShowing:false}) },
+    auth:        { openAuthDialog: ()=>Promise.resolve() },
+    feedback:    { canReview: ()=>Promise.resolve({value:false, reason:'YSDK_DISABLED'}), requestReview: ()=>Promise.resolve({feedbackSent:false}) },
+    shortcut:    { canShowPrompt: ()=>Promise.resolve({canShow:false}), showPrompt: ()=>Promise.resolve({outcome:'rejected'}) },
+    features:    { LoadingAPI: null, GameplayAPI: { start: ()=>{}, stop: ()=>{} }, GamesAPI: { getAllGames: ()=>Promise.reject() } },
+    getLeaderboards: ()=>Promise.resolve({ setLeaderboardScore:()=>{}, getLeaderboardDescription:()=>Promise.resolve({default:false,description:{invert_sort_order:false,score_format:{options:{decimal_offset:0}},type:'numeric'}}), getLeaderboardEntries:()=>Promise.resolve({entries:[]}) }),
+    getPlayer:   ()=>Promise.resolve({ getMode:()=>'lite', getName:()=>'', getUniqueID:()=>'stub-id', getPhoto:()=>'', getPayingStatus:()=>'unknown', getData:()=>Promise.resolve({}), setData:()=>Promise.resolve(), getStats:()=>Promise.resolve({}), setStats:()=>Promise.resolve(), incrementStats:()=>Promise.resolve() }),
+    getPayments: ()=>Promise.reject(new Error('payments not available')),
+    getFlags:    ()=>Promise.resolve({}),
+    serverTime:  ()=>Date.now(),
+    clipboard:   { writeText: ()=>Promise.resolve() },
+    dispatchEvent: ()=>{},
+    onEvent: ()=>{},
+    EVENTS: { EXIT: 'EXIT', HISTORY_BACK: 'HISTORY_BACK' },
+};
 var player    = null;
 var payments  = null;
 var leaderboards     = null;
@@ -250,8 +268,8 @@ async function fetchParts(filename, count, startPct, endPct) {
                 frameworkUrl:        BUILD_URL + "/Build.framework.js",
                 codeUrl:             wasmUrl,
                 streamingAssetsUrl:  "StreamingAssets",
-                companyName:         "KINETICCRIME",
-                productName:         "Build a Big Army!",
+                companyName:         "",
+                productName:         "!",
                 productVersion:      "0.5",
             }, (p) => {
                 setProgress(Math.round(88 + p * 10));
@@ -302,7 +320,6 @@ Element.prototype.requestPointerLock = async function(...args) {
     try { (args[0] ||= {}).unadjustedMovement = true; await _oPRL.apply(this, args); } catch(e) {}
 };
 </script>
-
 
 <!-- Sticky Bottom Center Ad (728x90) with Smooth Slide-Out and Reappearance -->
 <style>
